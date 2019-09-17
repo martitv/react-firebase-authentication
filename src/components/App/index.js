@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import * as ROUTES from "../../constants/routes";
 import Navigation from "../Navigation";
@@ -10,21 +10,13 @@ import PasswordForgetPage from "../PasswordForget";
 import HomePage from "../Home";
 import AccountPage from "../Account";
 import AdminPage from "../Admin";
-import { FirebaseContext } from "../Firebase";
 import { AuthUserContext } from "../Session";
+import useAuthentication from "../Session/useAuthentication";
 
 
 
 const App = () => {
-  const firebase = useContext(FirebaseContext);
-  const [authUser, setAuthUser] = useState(null);
-
-  useEffect(() => {
-    const listener = firebase.auth.onAuthStateChanged(authUser => {
-      setAuthUser(authUser);
-    });
-    return () => listener();
-  }, [firebase.auth]);
+  const authUser = useAuthentication();
 
   return (
     <AuthUserContext.Provider value={authUser}>
