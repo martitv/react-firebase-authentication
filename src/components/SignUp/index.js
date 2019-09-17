@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, withRouter } from "react-router-dom";
+
+import { FirebaseContext } from "../Firebase";
 
 import * as ROUTES from "../../constants/routes";
 
@@ -11,18 +13,40 @@ const INITIAL_STATE = {
   error: null
 };
 
-const SignUpPage = () => (
-  <div>
-    <h1>SignUp</h1>
-    <SignUpForm></SignUpForm>
-  </div>
-);
+const SignUpPage = () => {
+  return (
+    <div>
+      <h1>SignUp</h1>
+      <SignUpForm />
+    </div>
+  );
+};
 
-const SignUpForm = () => {
+const SignUpFormBase = ({ history }) => {
+  const firebase = useContext(FirebaseContext);
+
   const [formValues, setFormValues] = useState(INITIAL_STATE);
   const { username, email, passwordOne, passwordTwo, error } = formValues;
 
-  const onSubmit = event => {};
+  const isInvalid =
+    passwordOne !== passwordTwo ||
+    passwordOne === "" ||
+    email === "" ||
+    username === "";
+
+  const onSubmit = event => {
+    const { username, email, passwordOne } = formValues;
+    firebase
+      .doCreateUserWithEmailAndPassword(email, passwordOne)
+      .then(authUser => {
+        setFormValues({ ...INITIAL_STATE });
+        history.push(ROUTES.HOME);
+      })
+      .catch(error => {
+        setFormValues({ ...formValues, error });
+      });
+    event.preventDefault();
+  };
 
   const onChange = event => {
     setFormValues({
@@ -61,7 +85,9 @@ const SignUpForm = () => {
         type="password"
         placeholder="Confirm Password"
       />
-      <button type="submit">Sign Up</button>
+      <button disabled={isInvalid} type="submit">
+        Sign Up
+      </button>
       {error && <p>{error.message}</p>}
     </form>
   );
@@ -72,6 +98,8 @@ const SignUpLink = () => (
     Don't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
   </p>
 );
+
+const SignUpForm = withRouter(SignUpFormBase);
 
 export default SignUpPage;
 export { SignUpForm, SignUpLink };
