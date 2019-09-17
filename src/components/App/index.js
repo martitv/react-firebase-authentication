@@ -13,6 +13,8 @@ import AdminPage from "../Admin";
 import { FirebaseContext } from "../Firebase";
 import { AuthUserContext } from "../Session";
 
+
+
 const App = () => {
   const firebase = useContext(FirebaseContext);
   const [authUser, setAuthUser] = useState(null);

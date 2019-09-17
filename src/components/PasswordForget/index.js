@@ -20,7 +20,7 @@ const PasswordForgetForm = () => {
 
   const [formValues, setFormValues] = useState(INITIAL_STATE);
   const { email, error } = formValues;
-  
+
   const isInvalid = email === "";
 
   const onSubmit = event => {
