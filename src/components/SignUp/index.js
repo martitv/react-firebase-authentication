@@ -35,10 +35,17 @@ const SignUpFormBase = ({ history }) => {
     username === "";
 
   const onSubmit = event => {
-    const { username, email, passwordOne } = formValues;
     firebase
       .doCreateUserWithEmailAndPassword(email, passwordOne)
       .then(authUser => {
+        return firebase
+          .user(authUser.user.uid)
+          .set({
+            username,
+            email
+          });
+      })
+      .then(() => {
         setFormValues({ ...INITIAL_STATE });
         history.push(ROUTES.HOME);
       })
@@ -62,7 +69,7 @@ const SignUpFormBase = ({ history }) => {
         value={username}
         onChange={onChange}
         type="text"
-        placeholder="Full Name"
+        placeholder="Username"
       />
       <input
         name="email"

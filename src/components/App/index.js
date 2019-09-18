@@ -19,12 +19,18 @@ const PrivateRoute = ({ component: Component, requiredRole, ...rest }) => {
   const condition = (authUser, requiredRole) => !!authUser;
   //const condition = (authUser, requiredRole) => !!authUser && !!requiredRole && !!authUser.roles[requiredRole];
 
-
-  return (<Route {...rest} render={(props) => (
-    condition(authUser, requiredRole)
-      ? <Component {...props} />
-      : <Redirect to={ROUTES.LANDING} />
-  )} />)
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        condition(authUser, requiredRole) ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to={ROUTES.LANDING} />
+        )
+      }
+    />
+  );
 };
 
 const App = () => {
@@ -39,13 +45,19 @@ const App = () => {
           <Route exact path={ROUTES.LANDING} component={LandingPage}></Route>
           <Route path={ROUTES.SIGN_UP} component={SignUpPage}></Route>
           <Route path={ROUTES.SIGN_IN} component={SignInPage}></Route>
-          <Route
+          <PrivateRoute
             path={ROUTES.PASSWORD_FORGET}
             component={PasswordForgetPage}
-          ></Route>
-          <Route path={ROUTES.HOME} component={HomePage}></Route>
-          <PrivateRoute path={ROUTES.ACCOUNT} component={AccountPage}></PrivateRoute>
-          <PrivateRoute path={ROUTES.ADMIN} component={AdminPage} requiredRole={ROLES.ADMIN}></PrivateRoute>
+          ></PrivateRoute>
+          <PrivateRoute path={ROUTES.HOME} component={HomePage}></PrivateRoute>
+          <PrivateRoute
+            path={ROUTES.ACCOUNT}
+            component={AccountPage}
+          ></PrivateRoute>
+          <PrivateRoute
+            path={ROUTES.ADMIN}
+            component={AdminPage}
+          ></PrivateRoute>
         </div>
       </Router>
     </AuthUserContext.Provider>
