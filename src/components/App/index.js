@@ -1,6 +1,7 @@
-import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import React, { useContext } from "react";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import * as ROUTES from "../../constants/routes";
+import * as ROLES from "../../constants/roles";
 import Navigation from "../Navigation";
 
 import LandingPage from "../Landing";
@@ -13,7 +14,18 @@ import AdminPage from "../Admin";
 import { AuthUserContext } from "../Session";
 import useAuthentication from "../Session/useAuthentication";
 
+const PrivateRoute = ({ component: Component, requiredRole, ...rest }) => {
+  const authUser = useContext(AuthUserContext);
+  const condition = (authUser, requiredRole) => !!authUser;
+  //const condition = (authUser, requiredRole) => !!authUser && !!requiredRole && !!authUser.roles[requiredRole];
 
+
+  return (<Route {...rest} render={(props) => (
+    condition(authUser, requiredRole)
+      ? <Component {...props} />
+      : <Redirect to={ROUTES.LANDING} />
+  )} />)
+};
 
 const App = () => {
   const authUser = useAuthentication();
@@ -32,8 +44,8 @@ const App = () => {
             component={PasswordForgetPage}
           ></Route>
           <Route path={ROUTES.HOME} component={HomePage}></Route>
-          <Route path={ROUTES.ACCOUNT} component={AccountPage}></Route>
-          <Route path={ROUTES.ADMIN} component={AdminPage}></Route>
+          <PrivateRoute path={ROUTES.ACCOUNT} component={AccountPage}></PrivateRoute>
+          <PrivateRoute path={ROUTES.ADMIN} component={AdminPage} requiredRole={ROLES.ADMIN}></PrivateRoute>
         </div>
       </Router>
     </AuthUserContext.Provider>
