@@ -42,22 +42,13 @@ const App = () => {
         <div>
           <Navigation />
           <hr></hr>
-          <Route exact path={ROUTES.LANDING} component={LandingPage}></Route>
-          <Route path={ROUTES.SIGN_UP} component={SignUpPage}></Route>
-          <Route path={ROUTES.SIGN_IN} component={SignInPage}></Route>
-          <PrivateRoute
-            path={ROUTES.PASSWORD_FORGET}
-            component={PasswordForgetPage}
-          ></PrivateRoute>
-          <PrivateRoute path={ROUTES.HOME} component={HomePage}></PrivateRoute>
-          <PrivateRoute
-            path={ROUTES.ACCOUNT}
-            component={AccountPage}
-          ></PrivateRoute>
-          <PrivateRoute
-            path={ROUTES.ADMIN}
-            component={AdminPage}
-          ></PrivateRoute>
+          <Route exact  path={ROUTES.LANDING}         component={LandingPage}></Route>
+          <Route        path={ROUTES.SIGN_UP}         component={SignUpPage}></Route>
+          <Route        path={ROUTES.SIGN_IN}         component={SignInPage}></Route>
+          <PrivateRoute path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage}></PrivateRoute>
+          <PrivateRoute path={ROUTES.HOME}            component={HomePage}></PrivateRoute>
+          <PrivateRoute path={ROUTES.ACCOUNT}         component={AccountPage}></PrivateRoute>
+          <PrivateRoute path={ROUTES.ADMIN}           component={AdminPage}></PrivateRoute>
         </div>
       </Router>
     </AuthUserContext.Provider>
