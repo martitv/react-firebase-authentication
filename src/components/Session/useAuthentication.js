@@ -6,11 +6,20 @@ const useAuthentication = () => {
   const [authUser, setAuthUser] = useState(null);
 
   useEffect(() => {
-    const listener = firebase.auth.onAuthStateChanged(authUser => {
-      setAuthUser(authUser);
+    const listener = firebase.onAuthListener(user => {
+      sessionStorage.setItem('user', JSON.stringify(user));
+      setAuthUser(user);
     });
+
     return () => listener();
-  }, [firebase.auth]);
+  }, [firebase]);
+
+  if(!authUser) {
+    const cachedUser = JSON.parse(sessionStorage.getItem('user'));
+    if(cachedUser) {
+      setAuthUser(cachedUser);
+    }
+  }
 
   return authUser;
 };

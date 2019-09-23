@@ -16,8 +16,13 @@ import useAuthentication from "../Session/useAuthentication";
 
 const PrivateRoute = ({ component: Component, requiredRole, ...rest }) => {
   const authUser = useContext(AuthUserContext);
-  const condition = (authUser, requiredRole) => !!authUser;
-  //const condition = (authUser, requiredRole) => !!authUser && !!requiredRole && !!authUser.roles[requiredRole];
+  const condition = (authUser, requiredRole) => {
+    if (requiredRole) {
+      return authUser && !!authUser.roles[requiredRole];
+    } else {
+      return !!authUser;
+    }
+  };
 
   return (
     <Route
@@ -26,7 +31,7 @@ const PrivateRoute = ({ component: Component, requiredRole, ...rest }) => {
         condition(authUser, requiredRole) ? (
           <Component {...props} />
         ) : (
-          <Redirect to={ROUTES.LANDING} />
+          <Redirect to={ROUTES.SIGN_IN} />
         )
       }
     />
@@ -42,13 +47,23 @@ const App = () => {
         <div>
           <Navigation />
           <hr></hr>
-          <Route exact  path={ROUTES.LANDING}         component={LandingPage}></Route>
-          <Route        path={ROUTES.SIGN_UP}         component={SignUpPage}></Route>
-          <Route        path={ROUTES.SIGN_IN}         component={SignInPage}></Route>
-          <PrivateRoute path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage}></PrivateRoute>
-          <PrivateRoute path={ROUTES.HOME}            component={HomePage}></PrivateRoute>
-          <PrivateRoute path={ROUTES.ACCOUNT}         component={AccountPage}></PrivateRoute>
-          <PrivateRoute path={ROUTES.ADMIN}           component={AdminPage}></PrivateRoute>
+          <Route exact path={ROUTES.LANDING} component={LandingPage}></Route>
+          <Route path={ROUTES.SIGN_UP} component={SignUpPage}></Route>
+          <Route path={ROUTES.SIGN_IN} component={SignInPage}></Route>
+          <PrivateRoute
+            path={ROUTES.PASSWORD_FORGET}
+            component={PasswordForgetPage}
+          ></PrivateRoute>
+          <PrivateRoute path={ROUTES.HOME} component={HomePage}></PrivateRoute>
+          <PrivateRoute
+            path={ROUTES.ACCOUNT}
+            component={AccountPage}
+          ></PrivateRoute>
+          <PrivateRoute
+            path={ROUTES.ADMIN}
+            component={AdminPage}
+            requiredRole={ROLES.ADMIN}
+          ></PrivateRoute>
         </div>
       </Router>
     </AuthUserContext.Provider>

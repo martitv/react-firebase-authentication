@@ -4,12 +4,14 @@ import { Link, withRouter } from "react-router-dom";
 import { FirebaseContext } from "../Firebase";
 
 import * as ROUTES from "../../constants/routes";
+import * as ROLES from "../../constants/roles";
 
 const INITIAL_STATE = {
   username: "",
   email: "",
   passwordOne: "",
   passwordTwo: "",
+  isAdmin: false,
   error: null
 };
 
@@ -26,7 +28,7 @@ const SignUpFormBase = ({ history }) => {
   const firebase = useContext(FirebaseContext);
 
   const [formValues, setFormValues] = useState(INITIAL_STATE);
-  const { username, email, passwordOne, passwordTwo, error } = formValues;
+  const { username, email, passwordOne, passwordTwo, isAdmin, error } = formValues;
 
   const isInvalid =
     passwordOne !== passwordTwo ||
@@ -35,15 +37,20 @@ const SignUpFormBase = ({ history }) => {
     username === "";
 
   const onSubmit = event => {
+
+    const roles = {};
+    if (isAdmin) {
+      roles[ROLES.ADMIN] = ROLES.ADMIN;
+    }
+
     firebase
       .doCreateUserWithEmailAndPassword(email, passwordOne)
       .then(authUser => {
-        return firebase
-          .user(authUser.user.uid)
-          .set({
-            username,
-            email
-          });
+        return firebase.user(authUser.user.uid).set({
+          username,
+          email,
+          roles
+        });
       })
       .then(() => {
         setFormValues({ ...INITIAL_STATE });
@@ -59,6 +66,12 @@ const SignUpFormBase = ({ history }) => {
     setFormValues({
       ...formValues,
       [event.target.name]: event.target.value
+    });
+  };
+  const onChangeCheckbox = event => {
+    setFormValues({
+      ...formValues,
+      [event.target.name]: event.target.checked
     });
   };
 
@@ -92,6 +105,15 @@ const SignUpFormBase = ({ history }) => {
         type="password"
         placeholder="Confirm Password"
       />
+      <label>
+        Admin:
+        <input
+          name="isAdmin"
+          type="checkbox"
+          checked={isAdmin}
+          onChange={onChangeCheckbox}
+        />
+      </label>
       <button disabled={isInvalid} type="submit">
         Sign Up
       </button>

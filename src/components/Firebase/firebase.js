@@ -15,7 +15,6 @@ var config = {
 class Firebase {
   constructor() {
     app.initializeApp(config);
-
     this.auth = app.auth();
     this.db = app.firestore();
   }
@@ -31,6 +30,27 @@ class Firebase {
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
 
   doPasswordUpdate = password => this.auth.currentUser.updatePassword(password);
+
+  onAuthListener = setNewUser =>
+    this.auth.onAuthStateChanged(user => {
+      if (user) {
+        this.user(user.uid).onSnapshot(doc => {
+          const dbUser = doc.data();
+
+          if (!dbUser.roles) {
+            dbUser.roles = {};
+          }
+
+          setNewUser({
+            uid: user.uid,
+            email: user.email,
+            ...dbUser
+          });
+        });
+      } else {
+        setNewUser(null);
+      }
+    });
 
   /* USER API */
   user = uid => this.db.collection("users").doc(uid);
