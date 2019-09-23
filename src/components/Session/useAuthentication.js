@@ -7,7 +7,7 @@ const useAuthentication = () => {
 
   useEffect(() => {
     const listener = firebase.onAuthListener(user => {
-      sessionStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user));
       setAuthUser(user);
     });
 
@@ -15,7 +15,7 @@ const useAuthentication = () => {
   }, [firebase]);
 
   if(!authUser) {
-    const cachedUser = JSON.parse(sessionStorage.getItem('user'));
+    const cachedUser = JSON.parse(localStorage.getItem('user'));
     if(cachedUser) {
       setAuthUser(cachedUser);
     }
