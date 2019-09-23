@@ -37,7 +37,7 @@ class Firebase {
         this.user(user.uid).onSnapshot(doc => {
           const dbUser = doc.data();
 
-          if (!dbUser.roles) {
+          if (dbUser && !dbUser.roles) {
             dbUser.roles = {};
           }
 
